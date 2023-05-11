@@ -3,32 +3,47 @@ package controller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
+import br.edu.fateczl.filaobj.Fila;
 import br.edu.fateczl.lista.listaObj.Lista;
 import model.Serie;
 
 public class NetflixController implements INetflixController {
-	
+
 	public NetflixController() {
 		super();
 	}
-	
+
 	@Override
 	public void filaMajorGenre() throws IOException, Exception {
-		montarObjetoLista();
-	}
-	
-	@Override
-	public void listaPremiereYear() {
-
-	}
-	
-	private Object montarObjetoLista() throws Exception {
 		String path = "C:\\Temp";
 		String arquivo = "netflixSeries.csv";
 		File arq = new File(path, arquivo);
+		Fila animation = new Fila();
+		Serie s = new Serie();
+		Object inicializar = null;
+		animation.insert(inicializar);
+
+		Fila comedy = new Fila();
+		comedy.insert(inicializar);
+		Fila docuseries = new Fila();
+		docuseries.insert(inicializar);
+		Fila drama = new Fila();
+		drama.insert(inicializar);
+		Fila fAnimation = new Fila();
+		fAnimation.insert(inicializar);
+		Fila fLanguage = new Fila();
+		fLanguage.insert(inicializar);
+		Fila marvel = new Fila();
+		marvel.insert(inicializar);
+		Fila reality = new Fila();
+		reality.insert(inicializar);
+		Fila talkshow = new Fila();
+		talkshow.insert(inicializar);
 		if (arq.exists() && arq.isFile()) {
 			System.out.println("Arquivo detectado!");
 			FileInputStream fluxo = new FileInputStream(arq);
@@ -37,83 +52,96 @@ public class NetflixController implements INetflixController {
 			String linha = buffer.readLine();
 			linha = buffer.readLine();
 			while (linha != null) {
-				Lista animation = new Lista();
-				Object inicializar = null;
-				animation.addFirst(inicializar);
-				Lista comedy = new Lista();
-				comedy.addFirst(inicializar);
-				Lista docuseries = new Lista();
-				docuseries.addFirst(inicializar);
-				Lista drama = new Lista();
-				drama.addFirst(inicializar);
-				Lista fAnimation = new Lista();
-				fAnimation.addFirst(inicializar);
-				Lista fLanguage = new Lista();
-				fLanguage.addFirst(inicializar);
-				Lista marvel = new Lista();
-				marvel.addFirst(inicializar);
-				Lista reality = new Lista();
-				reality.addFirst(inicializar);
-				Lista talkshow = new Lista();
-				talkshow.addFirst(inicializar);
-				Serie s = new Serie();
 
 				String[] vetLinha = linha.split(";(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-				s.major_genre = vetLinha[0]; 
-				s.title = vetLinha[1]; 
-				s.subgenre = vetLinha[2]; 
+				s.major_genre = vetLinha[0];
+				s.title = vetLinha[1];
+				s.subgenre = vetLinha[2];
 				s.premiere_year = Integer.parseInt(vetLinha[4]);
 				s.episodes = vetLinha[10];
 				s.status = vetLinha[6];
 				s.imdb_rating = Integer.parseInt(vetLinha[11]);
 				linha = buffer.readLine();
-					
-				switch(vetLinha[0]) {
+
+				switch (vetLinha[0]) {
 				case "Animation":
-					animation.addLast(s);
+					animation.insert(s);
 					break;
 				case "Comedy":
-					comedy.addLast(s);
+					comedy.insert(s);
 					break;
-					
+
 				case "Docu-Series":
-					docuseries.addLast(s);
+					docuseries.insert(s);
 					break;
-					
+
 				case "Drama":
-					drama.addLast(s);
+					drama.insert(s);
 					break;
-					
+
 				case "Family Animation":
-					fAnimation.addLast(s);
+					fAnimation.insert(s);
 					break;
-					
+
 				case "Foreign Language":
-					fLanguage.addLast(s);
+					fLanguage.insert(s);
 					break;
-					
+
 				case "Marvel":
-					marvel.addLast(s);
+					marvel.insert(s);
 					break;
-					
+
 				case "Reality":
-					reality.addLast(s);
+					reality.insert(s);
 					break;
-					
+
 				case "Talk Show":
-					talkshow.addLast(s);
+					talkshow.insert(s);
 					break;
 				}
-				
-				System.out.println(animation);
+			}
+			animation.remove();
+			talkshow.remove();
+			montarObjetoLista(talkshow);
+		}
+	}
+
+	@Override
+	public void listaPremiereYear() {
+
+	}
+
+	private void montarObjetoLista(Fila fila) {
+		String path = "C:\\Temp";
+		File arq2 = new File(path, "serie.txt");
+		File dir = new File(path);
+		StringBuffer sBuffer = new StringBuffer();
+		while (!fila.isEmpty()) {
+			try {
+				Serie s1 = (Serie) fila.remove();
+				sBuffer.append(s1.major_genre + "," + s1.title + "," + s1.subgenre + "," + s1.premiere_year + "," + s1.status
+						+ "," + s1.episodes + "," + s1.imdb_rating);
+				System.out.println(sBuffer.toString());
+				arq2.createNewFile();
+				if (dir.exists() && dir.isDirectory()) {
+					if (arq2.exists() && arq2.isFile()) {
+						String conteudo = sBuffer.toString();
+						FileWriter abreArq = new FileWriter(arq2, true);
+						PrintWriter escreveArq = new PrintWriter(abreArq);
+						escreveArq.write(conteudo);
+						escreveArq.flush();
+						escreveArq.close();
+						abreArq.close();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		return arq;
 	}
-	
+
 	private Object montarObjetoFila() {
 		return null;
 	}
-
 
 }
